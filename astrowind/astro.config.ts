@@ -27,7 +27,7 @@ const whenExternalScripts = (items: (() => AstroIntegration) | (() => AstroInteg
 export default defineConfig({
   output: 'static',
   adapter: cloudflare({ imageService: 'compile' }),
-  ...(process.env.ASTROWIND_BASE ? { build: { assetsPrefix: process.env.ASTROWIND_BASE } } : {}),
+  base: process.env.ASTROWIND_BASE ?? '/',
   session: false,
 
   // Prefetch links as they enter the viewport for snappier navigations

@@ -9,8 +9,16 @@ export async function assembleCloudflareAssets(
   { publicSiteUrl = process.env.PUBLIC_SITE_URL ?? 'https://example.com' } = {}
 ) {
   const outputDir = path.join(projectRoot, 'dist');
+  const astrowindClientDir = path.join(projectRoot, 'astrowind', 'dist', 'client');
+  let astrowindOutputDir = astrowindClientDir;
+  try {
+    await access(path.join(astrowindClientDir, 'astrowind'));
+    astrowindOutputDir = path.join(astrowindClientDir, 'astrowind');
+  } catch {
+    // Support standalone builds and older adapter output that use the client root directly.
+  }
   const sources = [
-    [path.join(projectRoot, 'astrowind', 'dist', 'client'), path.join(outputDir, 'astrowind')],
+    [astrowindOutputDir, path.join(outputDir, 'astrowind')],
     [path.join(projectRoot, 'starlight', 'dist'), path.join(outputDir, 'startlight')],
   ];
 
@@ -39,7 +47,9 @@ export async function assembleCloudflareAssets(
     if (fileName.startsWith('sitemap') && fileName.endsWith('.xml')) {
       const filePath = path.join(astrowindDir, fileName);
       const content = await readFile(filePath, 'utf8');
-      await writeFile(filePath, content.replaceAll(`<loc>${site.origin}/`, `<loc>${site.origin}/astrowind/`));
+      const escapedOrigin = site.origin.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const unprefixedLocation = new RegExp(`(<loc>${escapedOrigin}/)(?!astrowind/)`, 'g');
+      await writeFile(filePath, content.replace(unprefixedLocation, '$1astrowind/'));
     }
   }
 
@@ -50,6 +60,17 @@ export async function assembleCloudflareAssets(
   } catch (error) {
     if (error?.code !== 'ENOENT') throw error;
   }
+
+  await writeFile(
+    path.join(outputDir, 'robots.txt'),
+    [
+      'User-agent: *',
+      'Allow: /',
+      `Sitemap: ${site.origin}/astrowind/sitemap-index.xml`,
+      `Sitemap: ${site.origin}/startlight/sitemap-index.xml`,
+      '',
+    ].join('\n')
+  );
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

@@ -17,9 +17,6 @@ const landingMenu = headerData?.links?.find((link) => link.text === 'Landing');
 ---
 
 <PageLayout metadata={metadata}>
-  <Fragment slot="announcement">
-    <slot name="announcement" />
-  </Fragment>
   <Fragment slot="header">
     <slot name="header">
       <Header

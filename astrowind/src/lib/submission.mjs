@@ -82,7 +82,7 @@ export async function handleSubmission(kind, request, options) {
   if (params.get('website')) return respond(200, locale, copy.success);
 
   const email = (params.get('email') || '').trim().toLowerCase();
-  if (!validEmail(email)) return page(400, locale, copy.invalid, kind);
+  if (!validEmail(email)) return respond(400, locale, copy.invalid);
   let table;
   let row;
   if (kind === 'contact') {
