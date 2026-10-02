@@ -1,0 +1,19 @@
+{
+  "name": "aikitr-astro-template",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.22.3"
+  },
+  "scripts": {
+    "build": "node scripts/build-cloudflare.mjs",
+    "preview": "wrangler dev --config wrangler.jsonc",
+    "deploy": "npm run build && wrangler deploy --config wrangler.jsonc",
+    "assemble:cloudflare": "node scripts/assemble-cloudflare.mjs",
+    "create": "node scripts/create.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "4.146.0"
+  }
+}

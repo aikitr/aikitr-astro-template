@@ -1,0 +1,22 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+import ZhPostList from '~/components/ZhPostList.astro';
+import { getZhPosts, zhPostsPerPage } from '~/utils/zh-blog';
+
+export const getStaticPaths = (async ({ paginate }) =>
+  paginate(await getZhPosts(), {
+    pageSize: zhPostsPerPage,
+  })) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { page } = Astro.props as Props;
+---
+
+<ZhPostList
+  title="博客"
+  description="关于 Astro、网站内容与页面设计的示例文章。"
+  posts={page.data}
+  currentPage={page.currentPage}
+  prevUrl={page.url.prev}
+  nextUrl={page.url.next}
+/>

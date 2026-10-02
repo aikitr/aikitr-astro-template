@@ -1,0 +1,6 @@
+---
+import ZhMarketingPage from '~/components/ZhMarketingPage.astro';
+import { zhPages } from '~/i18n/zh-pages.mjs';
+---
+
+<ZhMarketingPage page={zhPages.find((page) => page.slug === 'index')!} />

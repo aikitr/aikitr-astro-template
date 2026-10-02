@@ -1,0 +1,12 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import { getLocalizedPermalink } from '~/utils/permalinks';
+---
+
+<Layout metadata={{ title: '页面未找到', robots: { index: false } }}>
+  <section class="mx-auto max-w-3xl px-6 py-24 text-center">
+    <h1 class="text-4xl font-bold">页面未找到</h1>
+    <p class="mt-4 text-muted">这个地址没有对应页面。你可以返回首页继续浏览。</p>
+    <a class="btn-primary mt-8 inline-block px-6 py-3" href={getLocalizedPermalink('/', 'zh-cn')}>返回首页</a>
+  </section>
+</Layout>

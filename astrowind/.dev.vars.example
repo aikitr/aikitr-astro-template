@@ -1,0 +1,4 @@
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SECRET_KEY=sb_secret_replace_me
+# Optional: configure both this secret and PUBLIC_TURNSTILE_SITE_KEY
+# TURNSTILE_SECRET_KEY=replace_me

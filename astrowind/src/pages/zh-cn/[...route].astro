@@ -1,0 +1,18 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+import ZhMarketingPage from '~/components/ZhMarketingPage.astro';
+import { zhPages } from '~/i18n/zh-pages.mjs';
+
+export const getStaticPaths = (() =>
+  zhPages
+    .filter((page) => page.slug !== 'index')
+    .map((page) => ({
+      params: { route: page.slug },
+      props: { page },
+    }))) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { page } = Astro.props as Props;
+---
+
+<ZhMarketingPage page={page} />

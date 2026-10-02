@@ -1,0 +1,34 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+import ZhPostList from '~/components/ZhPostList.astro';
+import { cleanSlug } from '~/utils/permalinks';
+import { getZhPosts, zhPostsPerPage } from '~/utils/zh-blog';
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const posts = await getZhPosts();
+  return [
+    ...new Map(posts.flatMap((post) => post.data.tags ?? []).map((tag) => [cleanSlug(tag), tag])).entries(),
+  ].flatMap(([slug, tag]) =>
+    paginate(
+      posts.filter((post) => post.data.tags?.some((value) => cleanSlug(value) === slug)),
+      {
+        params: { slug },
+        pageSize: zhPostsPerPage,
+        props: { tag },
+      }
+    )
+  );
+}) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { tag, page } = Astro.props as Props;
+---
+
+<ZhPostList
+  title={`标签：${tag}`}
+  description="带有这个标签的中文文章。"
+  posts={page.data}
+  currentPage={page.currentPage}
+  prevUrl={page.url.prev}
+  nextUrl={page.url.next}
+/>

@@ -1,0 +1,52 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import HeroText from '~/components/widgets/HeroText.astro';
+import Features2 from '~/components/widgets/Features2.astro';
+import Contact from '~/components/widgets/Contact.astro';
+import Newsletter from '~/components/widgets/Newsletter.astro';
+import type { zhPages } from '~/i18n/zh-pages.mjs';
+import { getPermalink } from '~/utils/permalinks';
+
+interface Props {
+  page: (typeof zhPages)[number];
+}
+const { page } = Astro.props;
+const items = page.points.map(([title, description]) => ({ title, description }));
+---
+
+<Layout metadata={{ title: page.title, description: page.description }}>
+  <HeroText tagline="中文演示页面" title={page.title} subtitle={page.description} />
+  <Features2 title="重点内容" items={items} />
+  {
+    page.contact && (
+      <Contact
+        id="form"
+        title="发送消息"
+        subtitle="请说明你的问题。提交后，站点运营者可在 Supabase 中查看记录。"
+        inputs={[
+          { type: 'text', name: 'name', label: '姓名', autocomplete: 'name' },
+          { type: 'email', name: 'email', label: '邮箱', autocomplete: 'email' },
+        ]}
+        textarea={{ label: '消息', name: 'message' }}
+        button="发送"
+      />
+    )
+  }
+  {
+    page.subscribe && (
+      <Newsletter
+        id="subscribe"
+        tagline="了解后续"
+        title="留下邮箱"
+        subtitle="此示例只保存订阅地址，不会自动发送邮件。"
+        placeholder="你的邮箱地址"
+        button="提交"
+      />
+    )
+  }
+  <section class="mx-auto max-w-4xl px-6 py-16 text-center">
+    <h2 class="text-2xl font-semibold">下一步</h2>
+    <p class="mt-4 text-muted">把示例文案替换成真实内容，或联系我们讨论你的需求。</p>
+    <a class="btn-primary mt-6 inline-block px-6 py-3" href={getPermalink('zh-cn/contact')}>联系我们</a>
+  </section>
+</Layout>

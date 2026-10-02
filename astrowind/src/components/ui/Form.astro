@@ -1,0 +1,94 @@
+---
+import type { Form as Props } from '~/types';
+import Button from '~/components/ui/Button.astro';
+import { getPermalink, isChinesePath } from '~/utils/permalinks';
+
+const { inputs, textarea, disclaimer, button = 'Contact us', description = '' } = Astro.props;
+const isChinese = isChinesePath(Astro.url.pathname);
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+---
+
+<form method="post" action={getPermalink(textarea ? 'api/contact' : 'api/subscribe')}>
+  <input type="hidden" name="locale" value={isChinese ? 'zh-cn' : 'en'} />
+  <div aria-hidden="true" class="absolute -left-[10000px]">
+    <label for="contact-website">Website</label>
+    <input id="contact-website" name="website" tabindex="-1" autocomplete="off" />
+  </div>
+  {
+    inputs &&
+      inputs.map(
+        ({ type = 'text', name, label = '', autocomplete = 'on', placeholder = '' }) =>
+          name && (
+            <div class="mb-6">
+              {label && (
+                <label for={name} class="block text-sm font-medium">
+                  {label}
+                </label>
+              )}
+              <input
+                type={type}
+                name={name}
+                id={name}
+                autocomplete={autocomplete}
+                placeholder={placeholder}
+                required
+                maxlength={name === 'name' ? 100 : 254}
+                class="py-3 px-4 block w-full text-md rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900"
+              />
+            </div>
+          )
+      )
+  }
+
+  {
+    textarea && (
+      <div>
+        <label for="textarea" class="block text-sm font-medium">
+          {textarea.label}
+        </label>
+        <textarea
+          id="textarea"
+          name={textarea.name ? textarea.name : 'message'}
+          rows={textarea.rows ? textarea.rows : 4}
+          placeholder={textarea.placeholder}
+          required
+          maxlength="5000"
+          class="py-3 px-4 block w-full text-md rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900"
+        />
+      </div>
+    )
+  }
+
+  {
+    !textarea && (
+      <label class="mt-3 flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
+        <input name="consent" type="checkbox" required />
+        {isChinese
+          ? '我同意保存我的邮箱地址，以便网站运营者后续联系我。'
+          : 'I agree to save my email address so the site owner may contact me later.'}
+      </label>
+    )
+  }
+
+  {siteKey && <div class="cf-turnstile mt-4" data-sitekey={siteKey} />}
+  {siteKey && <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />}
+  {disclaimer?.label && <p class="mt-4 text-sm text-gray-600 dark:text-gray-400">{disclaimer.label}</p>}
+
+  {
+    button && (
+      <div class="mt-10 grid">
+        <Button variant="primary" type="submit">
+          {button}
+        </Button>
+      </div>
+    )
+  }
+
+  {
+    description && (
+      <div class="mt-3 text-center">
+        <p class="text-sm text-gray-600 dark:text-gray-400">{description}</p>
+      </div>
+    )
+  }
+</form>

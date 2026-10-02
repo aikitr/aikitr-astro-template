@@ -1,0 +1,8 @@
+node_modules/
+.astro/
+dist/
+.wrangler/
+.dev.vars
+.env
+.superpowers/
+.idea/

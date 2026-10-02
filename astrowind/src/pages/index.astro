@@ -1,0 +1,52 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import { getPermalink } from '~/utils/permalinks';
+import HeroText from '~/components/widgets/HeroText.astro';
+import Features2 from '~/components/widgets/Features2.astro';
+import Newsletter from '~/components/widgets/Newsletter.astro';
+import { SITE } from 'astrowind:config';
+---
+
+<Layout
+  metadata={{
+    title: SITE.name,
+    ignoreTitleTemplate: true,
+    description: 'A bilingual website starter built with Astro, local Markdown, and Supabase forms.',
+  }}
+>
+  <HeroText
+    tagline="A flexible website starter"
+    title="Make your next idea easy to explore"
+    subtitle="A clear place for your story, articles, and conversations. Replace this sample content with your own project."
+  />
+  <Features2
+    id="features"
+    title="A useful starting point"
+    items={[
+      {
+        title: 'Content you own',
+        description: 'Write and review posts in local Markdown, then publish them with the site.',
+      },
+      {
+        title: 'Pages you can compose',
+        description: 'Use the included AstroWind sections to build marketing, product, and personal pages.',
+      },
+      {
+        title: 'Forms that save safely',
+        description: 'Cloudflare Workers validate contact and subscription forms before saving them to Supabase.',
+      },
+    ]}
+  />
+  <section class="mx-auto max-w-4xl px-6 py-16 text-center">
+    <h2 class="text-2xl font-semibold">Explore the examples</h2>
+    <p class="mt-4 text-muted">
+      The full AstroWind showcase and its landing page demos remain available as references.
+    </p>
+    <a class="btn-primary mt-6 inline-block px-6 py-3" href={getPermalink('showcase')}>View the showcase</a>
+  </section>
+  <Newsletter
+    title="Stay in touch"
+    subtitle="Leave your email so the site owner can contact you later. This starter does not send emails automatically."
+    button="Save my email"
+  />
+</Layout>
