@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assembleCloudflareAssets } from './assemble-cloudflare.mjs';
 
-const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 
 function runNpm(args, env = process.env) {

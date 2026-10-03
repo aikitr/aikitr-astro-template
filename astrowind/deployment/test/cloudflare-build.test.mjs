@@ -8,34 +8,32 @@ import { assembleCloudflareAssets } from '../scripts/assemble-cloudflare.mjs';
 
 test('assembles both sites beneath their public path and removes stale output', async () => {
   const rootDir = await mkdtemp(path.join(os.tmpdir(), 'astro-cloudflare-'));
+  const outputDir = path.join(rootDir, 'astrowind', 'deployment', 'dist');
   const astrowindDir = path.join(rootDir, 'astrowind', 'dist', 'client', 'astrowind');
 
   try {
     await mkdir(path.join(rootDir, 'starlight', 'dist'), { recursive: true });
     await mkdir(astrowindDir, { recursive: true });
-    await mkdir(path.join(rootDir, 'dist'), { recursive: true });
+    await mkdir(outputDir, { recursive: true });
     await writeFile(path.join(rootDir, 'starlight', 'dist', 'index.html'), 'docs');
     await writeFile(path.join(astrowindDir, 'index.html'), 'site');
-    await writeFile(
-      path.join(astrowindDir, 'sitemap-index.xml'),
-      '<loc>https://example.test/sitemap-0.xml</loc>'
-    );
+    await writeFile(path.join(astrowindDir, 'sitemap-index.xml'), '<loc>https://example.test/sitemap-0.xml</loc>');
     await writeFile(path.join(astrowindDir, 'robots.txt'), 'Sitemap: https://example.test/sitemap-index.xml');
-    await writeFile(path.join(rootDir, 'dist', 'stale.txt'), 'stale');
+    await writeFile(path.join(outputDir, 'stale.txt'), 'stale');
 
     await assembleCloudflareAssets(rootDir, { publicSiteUrl: 'https://example.test' });
 
-    assert.equal(await readFile(path.join(rootDir, 'dist', 'startlight', 'index.html'), 'utf8'), 'docs');
-    assert.equal(await readFile(path.join(rootDir, 'dist', 'astrowind', 'index.html'), 'utf8'), 'site');
+    assert.equal(await readFile(path.join(outputDir, 'startlight', 'index.html'), 'utf8'), 'docs');
+    assert.equal(await readFile(path.join(outputDir, 'astrowind', 'index.html'), 'utf8'), 'site');
     assert.equal(
-      await readFile(path.join(rootDir, 'dist', 'astrowind', 'sitemap-index.xml'), 'utf8'),
+      await readFile(path.join(outputDir, 'astrowind', 'sitemap-index.xml'), 'utf8'),
       '<loc>https://example.test/astrowind/sitemap-0.xml</loc>'
     );
     assert.equal(
-      await readFile(path.join(rootDir, 'dist', 'astrowind', 'robots.txt'), 'utf8'),
+      await readFile(path.join(outputDir, 'astrowind', 'robots.txt'), 'utf8'),
       'Sitemap: https://example.test/astrowind/sitemap-index.xml'
     );
-    await assert.rejects(readFile(path.join(rootDir, 'dist', 'stale.txt')));
+    await assert.rejects(readFile(path.join(outputDir, 'stale.txt')));
   } finally {
     await rm(rootDir, { recursive: true, force: true });
   }

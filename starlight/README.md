@@ -2,6 +2,8 @@
 
 复制本目录即可独立开发，需要 Node.js 22.22.3 或更新版本，使用 npm。执行 `npm ci && npm run dev` 后访问 `/`（英文）或 `/zh-cn/`（中文）。
 
+本仓库将 Starlight 与 AstroWind 部署到同一个 Cloudflare Worker 的方法见 [组合部署说明](../astrowind/deployment/README.md)。独立复制时排除生成目录和已有密钥文件；使用下方的独立部署配置即可。
+
 ## 修改内容
 
 - 英文文档位于 `src/content/docs/`，中文对应内容位于 `src/content/docs/zh-cn/`。同名路径会由 Starlight 的语言切换器关联。

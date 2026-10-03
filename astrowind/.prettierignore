@@ -1,4 +1,6 @@
 dist
+deployment/dist
+deployment/.wrangler
 node_modules
 .github
 .changeset

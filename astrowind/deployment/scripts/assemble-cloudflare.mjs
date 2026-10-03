@@ -6,7 +6,7 @@ export async function assembleCloudflareAssets(projectRoot, { publicSiteUrl = 'h
   if (site.pathname !== '/' || site.search || site.hash) {
     throw new Error('PUBLIC_SITE_URL must be an origin such as https://docs.example.com, without a path or query.');
   }
-  const outputDir = path.join(projectRoot, 'dist');
+  const outputDir = path.join(projectRoot, 'astrowind', 'deployment', 'dist');
   const sources = [
     [path.join(projectRoot, 'astrowind', 'dist', 'client', 'astrowind'), path.join(outputDir, 'astrowind')],
     [path.join(projectRoot, 'starlight', 'dist'), path.join(outputDir, 'startlight')],

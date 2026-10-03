@@ -1,5 +1,5 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
+  "$schema": "../node_modules/wrangler/config-schema.json",
   "name": "aikitr-astro-template",
   "main": "./src/cloudflare-worker.mjs",
   "compatibility_date": "2026-10-02",
@@ -10,7 +10,7 @@
     "binding": "ASSETS",
     "not_found_handling": "404-page",
     "html_handling": "auto-trailing-slash",
-    "run_worker_first": ["/astrowind/api/*"]
+    "run_worker_first": ["/astrowind/api/*"],
   },
-  "observability": { "enabled": true }
+  "observability": { "enabled": true },
 }

@@ -2,6 +2,8 @@
 
 复制本目录即可独立开发，含组件、演示页、英文与中文博客，可按项目需要删减。英文站点位于 `/`，中文站点位于 `/zh-cn/`。页面和博客在构建时生成；联系与订阅表单由 Cloudflare Worker 处理。上游版本与 MIT 署名见 [UPSTREAM.md](UPSTREAM.md)。
 
+本仓库将两个模板部署到同一个 Cloudflare Worker 的方法见 [deployment/README.md](deployment/README.md)。复制 AstroWind 独立开发时排除 `deployment/`、生成目录和已有密钥文件。
+
 需要 Node.js 22.22.3 或更新版本，使用 npm。首次运行：
 
 ```sh

@@ -1,4 +1,4 @@
-import astrowind from '../astrowind/dist/server/entry.mjs';
+import astrowind from '../../dist/server/entry.mjs';
 
 export default {
   async fetch(request, env, ctx) {
