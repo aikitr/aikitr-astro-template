@@ -1,12 +1,17 @@
 # AstroWind 双语网站模板
 
-这是基于 AstroWind 的完整网站模板，含组件、演示页、英文与中文博客。英文站点位于 `/`，中文站点位于 `/zh-cn/`。页面和博客在构建时生成；只有联系与订阅表单由 Cloudflare Worker 处理。上游版本与 MIT 署名见 [UPSTREAM.md](UPSTREAM.md)。
+复制本目录即可独立开发，含组件、演示页、英文与中文博客，可按项目需要删减。英文站点位于 `/`，中文站点位于 `/zh-cn/`。页面和博客在构建时生成；联系与订阅表单由 Cloudflare Worker 处理。上游版本与 MIT 署名见 [UPSTREAM.md](UPSTREAM.md)。
 
-需要 Node.js 22.22.3 或更新版本。首次运行：
+需要 Node.js 22.22.3 或更新版本，使用 npm。首次运行：
 
 ```sh
 npm ci
 npm run dev
+```
+
+修改后检查与预览：
+
+```sh
 npm run test
 npm run check
 npm run build
@@ -26,14 +31,16 @@ npm run preview:worker
 
 ## Supabase 表单
 
-联系表单提交到 `POST /api/contact`，订阅表单提交到 `POST /api/subscribe`。首版只安全入库，不发送通知或订阅邮件。订阅者勾选同意后才会存储邮箱；重复提交显示普通成功页。两个表不允许浏览器使用匿名密钥直接读取或写入。
+联系表单提交到 `POST /api/contact`，订阅表单提交到 `POST /api/subscribe`。只入库，不发送通知或订阅邮件。订阅者勾选同意后才会存储邮箱；重复提交显示普通成功页。两个表不允许浏览器使用匿名密钥直接读取或写入。
 
 1. 创建 Supabase 项目，在项目中执行 `supabase/migrations/20261002053928_create_form_tables.sql`。可使用 Supabase SQL Editor，或安装/运行 Supabase CLI 后执行 `supabase login`、`supabase link --project-ref <项目 ID>`、`supabase db push`。
 2. 将 `.dev.vars.example` 复制为 `.dev.vars`，填写项目 URL 与 **secret key**。只在服务端使用；不要放入 `PUBLIC_` 环境变量，也不要提交 `.dev.vars`。旧项目若使用 `service_role` 密钥，也只能放在 Worker 密钥中。
-3. `npm run build && npm run preview`，测试表单。未配置密钥时接口返回暂不可用，不会假装提交成功。
+3. `npm run build && npm run preview:worker`，测试表单。未配置密钥时接口返回暂不可用，不会假装提交成功。
 4. 正式部署前在 Cloudflare 中设置 `SUPABASE_URL` 和 `SUPABASE_SECRET_KEY` 为 Worker Secrets，例如 `npx wrangler secret put SUPABASE_URL` 和 `npx wrangler secret put SUPABASE_SECRET_KEY`。
 
 数据库迁移启用了 RLS，且撤销了 `anon`、`authenticated` 的表权限。Worker 使用有权限的密钥写入；浏览器代码不会获取这个密钥。应在 Supabase 控制台按运营需求设置数据保留期限和访问流程。
+
+`supabase/config.toml` 只保留本地数据库版本与迁移设置；其他选项使用 [Supabase CLI 默认值](https://supabase.com/docs/guides/local-development/cli/config)。修改本地数据库版本时，与自己的 Supabase 项目保持一致。
 
 ## 可选 Turnstile
 

@@ -1,6 +1,7 @@
 import { spawn } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { assembleCloudflareAssets } from './assemble-cloudflare.mjs';
 
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
@@ -16,16 +17,16 @@ function runNpm(args, env = process.env) {
   });
 }
 
-await runNpm(['ci', '--prefix', 'astrowind']);
-await runNpm(['ci', '--prefix', 'starlight']);
-await runNpm(['run', 'build', '--prefix', 'astrowind'], {
-  ...process.env,
-  ASTROWIND_BASE: '/astrowind',
-  PUBLIC_SITE_URL: process.env.PUBLIC_SITE_URL ?? 'https://example.com',
-});
-await runNpm(['run', 'build', '--prefix', 'starlight'], {
-  ...process.env,
-  STARLIGHT_BASE: '/startlight',
-  PUBLIC_SITE_URL: process.env.PUBLIC_SITE_URL ?? 'https://example.com',
-});
-await runNpm(['run', 'assemble:cloudflare']);
+const publicSiteUrl = process.env.PUBLIC_SITE_URL ?? 'https://example.com';
+for (const [template, variable, base] of [
+  ['astrowind', 'ASTROWIND_BASE', '/astrowind'],
+  ['starlight', 'STARLIGHT_BASE', '/startlight'],
+]) {
+  await runNpm(['ci', '--prefix', template]);
+  await runNpm(['run', 'build', '--prefix', template], {
+    ...process.env,
+    [variable]: base,
+    PUBLIC_SITE_URL: publicSiteUrl,
+  });
+}
+await assembleCloudflareAssets(rootDir, { publicSiteUrl });

@@ -46,11 +46,7 @@ export const isChinesePath = (pathname: string) => /^\/zh-cn(?:\/|$)/.test(witho
 export const getLocalizedPermalink = (pathname: string, locale: 'en' | 'zh-cn') => {
   const relativePath = withoutBasePath(pathname).replace(/^\/zh-cn(?=\/|$)/, '') || '/';
   const localizedPath =
-    locale === 'zh-cn'
-      ? relativePath === '/'
-        ? '/zh-cn/'
-        : `/zh-cn${relativePath}`
-      : relativePath;
+    locale === 'zh-cn' ? (relativePath === '/' ? '/zh-cn/' : `/zh-cn${relativePath}`) : relativePath;
 
   return getPermalink(localizedPath);
 };

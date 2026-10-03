@@ -11,7 +11,8 @@ export function canonicalUrl(pathname = '', site, base = '/', trailingSlash) {
   const pagePath = pathname || '/';
   const basePath = normalizedBase === '/' ? '' : normalizedBase;
   const isAlreadyPrefixed = basePath && (pagePath === basePath || pagePath.startsWith(`${basePath}/`));
-  const publicPath = basePath && !isAlreadyPrefixed ? `${basePath}${pagePath.startsWith('/') ? pagePath : `/${pagePath}`}` : pagePath;
+  const publicPath =
+    basePath && !isAlreadyPrefixed ? `${basePath}${pagePath.startsWith('/') ? pagePath : `/${pagePath}`}` : pagePath;
   const url = new URL(publicPath, site).toString();
 
   if (trailingSlash === false && pathname && url.endsWith('/')) {

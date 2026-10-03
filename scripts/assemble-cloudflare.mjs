@@ -1,24 +1,14 @@
 import { access, cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
-const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-
-export async function assembleCloudflareAssets(
-  projectRoot = rootDir,
-  { publicSiteUrl = process.env.PUBLIC_SITE_URL ?? 'https://example.com' } = {}
-) {
-  const outputDir = path.join(projectRoot, 'dist');
-  const astrowindClientDir = path.join(projectRoot, 'astrowind', 'dist', 'client');
-  let astrowindOutputDir = astrowindClientDir;
-  try {
-    await access(path.join(astrowindClientDir, 'astrowind'));
-    astrowindOutputDir = path.join(astrowindClientDir, 'astrowind');
-  } catch {
-    // Support standalone builds and older adapter output that use the client root directly.
+export async function assembleCloudflareAssets(projectRoot, { publicSiteUrl = 'https://example.com' } = {}) {
+  const site = new URL(publicSiteUrl);
+  if (site.pathname !== '/' || site.search || site.hash) {
+    throw new Error('PUBLIC_SITE_URL must be an origin such as https://docs.example.com, without a path or query.');
   }
+  const outputDir = path.join(projectRoot, 'dist');
   const sources = [
-    [astrowindOutputDir, path.join(outputDir, 'astrowind')],
+    [path.join(projectRoot, 'astrowind', 'dist', 'client', 'astrowind'), path.join(outputDir, 'astrowind')],
     [path.join(projectRoot, 'starlight', 'dist'), path.join(outputDir, 'startlight')],
   ];
 
@@ -35,11 +25,6 @@ export async function assembleCloudflareAssets(
 
   for (const [source, destination] of sources) {
     await cp(source, destination, { recursive: true });
-  }
-
-  const site = new URL(publicSiteUrl);
-  if (site.pathname !== '/' || site.search || site.hash) {
-    throw new Error('PUBLIC_SITE_URL must be an origin such as https://docs.example.com, without a path or query.');
   }
 
   const astrowindDir = path.join(outputDir, 'astrowind');
@@ -71,9 +56,4 @@ export async function assembleCloudflareAssets(
       '',
     ].join('\n')
   );
-}
-
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  await assembleCloudflareAssets();
-  console.log('Combined Cloudflare assets are ready in dist/astrowind and dist/startlight.');
 }

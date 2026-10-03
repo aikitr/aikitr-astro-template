@@ -60,4 +60,4 @@ Render it with `<script type="application/ld+json" set:html={JSON.stringify(arti
 
 - Always use `set:html` with `JSON.stringify`; never interpolate user content directly.
 - Validate with https://validator.schema.org/ or Google's Rich Results Test.
-- `astro-compress` minifies HTML but leaves `application/ld+json` scripts intact.
+- Astro preserves `application/ld+json` scripts in the generated HTML.

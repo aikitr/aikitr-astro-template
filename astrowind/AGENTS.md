@@ -1,6 +1,6 @@
 # AstroWind project notes
 
-This generated project derives from AstroWind; see UPSTREAM.md and LICENSE.md. Node.js >=22.22.3 is required.
+This template derives from AstroWind; see UPSTREAM.md and LICENSE.md. Node.js >=22.22.3 is required.
 
 - `npm run dev`, `npm run test`, `npm run check`, `npm run build`, `npm run preview` verify the project.
 - English routes use `/`; Chinese equivalents use `/zh-cn/`. When adding a visible page or blog post, add its translated counterpart and check language links.

@@ -1,6 +1,6 @@
 # Starlight 双语文档站
 
-需要 Node.js 22.22.3 或更新版本。执行 `npm ci && npm run dev` 后访问 `/`（英文）或 `/zh-cn/`（中文）。
+复制本目录即可独立开发，需要 Node.js 22.22.3 或更新版本，使用 npm。执行 `npm ci && npm run dev` 后访问 `/`（英文）或 `/zh-cn/`（中文）。
 
 ## 修改内容
 

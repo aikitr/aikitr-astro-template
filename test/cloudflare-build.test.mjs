@@ -8,18 +8,19 @@ import { assembleCloudflareAssets } from '../scripts/assemble-cloudflare.mjs';
 
 test('assembles both sites beneath their public path and removes stale output', async () => {
   const rootDir = await mkdtemp(path.join(os.tmpdir(), 'astro-cloudflare-'));
+  const astrowindDir = path.join(rootDir, 'astrowind', 'dist', 'client', 'astrowind');
 
   try {
     await mkdir(path.join(rootDir, 'starlight', 'dist'), { recursive: true });
-    await mkdir(path.join(rootDir, 'astrowind', 'dist', 'client'), { recursive: true });
+    await mkdir(astrowindDir, { recursive: true });
     await mkdir(path.join(rootDir, 'dist'), { recursive: true });
     await writeFile(path.join(rootDir, 'starlight', 'dist', 'index.html'), 'docs');
-    await writeFile(path.join(rootDir, 'astrowind', 'dist', 'client', 'index.html'), 'site');
+    await writeFile(path.join(astrowindDir, 'index.html'), 'site');
     await writeFile(
-      path.join(rootDir, 'astrowind', 'dist', 'client', 'sitemap-index.xml'),
+      path.join(astrowindDir, 'sitemap-index.xml'),
       '<loc>https://example.test/sitemap-0.xml</loc>'
     );
-    await writeFile(path.join(rootDir, 'astrowind', 'dist', 'client', 'robots.txt'), 'Sitemap: https://example.test/sitemap-index.xml');
+    await writeFile(path.join(astrowindDir, 'robots.txt'), 'Sitemap: https://example.test/sitemap-index.xml');
     await writeFile(path.join(rootDir, 'dist', 'stale.txt'), 'stale');
 
     await assembleCloudflareAssets(rootDir, { publicSiteUrl: 'https://example.test' });

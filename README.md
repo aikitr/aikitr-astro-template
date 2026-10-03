@@ -1,43 +1,52 @@
-# Astro 双模板脚手架
+# Astro 双模板示例
 
-仓库内提供两个可独立运行的 Astro 项目：`starlight/` 是中英双语文档站，`astrowind/` 是中英双语网站与博客。内容保存在本地 Markdown；AstroWind 的联系与订阅表单由 Cloudflare Worker 写入 Supabase。仓库自身也可以合并部署为一个 Worker：AstroWind 位于 `/astrowind/`，Starlight 位于 `/startlight/`。
+两个目录都是可直接复制、独立开发的 Astro 项目。内容保存在本地 Markdown；AstroWind 的联系与订阅表单通过 Cloudflare Worker 写入 Supabase。
 
-需要 Node.js 22.22.3 或更新版本、npm。创建命令仅复制文件，不会安装依赖，也不会覆盖已有目录。
+| 模板 | 用途 | 内容入口 |
+| --- | --- | --- |
+| [starlight/](starlight/README.md) | 中英双语文档站 | `src/content/docs/`、`astro.config.mjs` |
+| [astrowind/](astrowind/README.md) | 中英双语网站、博客与表单 | `src/pages/`、`src/data/post/`、`src/config.yaml` |
 
-## 创建项目
+需要 Node.js 22.22.3 或更新版本，使用 npm 和各模板自己的 `package-lock.json`。
+
+## 复制后开发
+
+复制需要的模板目录即可，根目录文件用于本仓库的合并演示部署，无需一起复制。不要复制 `node_modules/`、`dist/`、`.astro/`、`.wrangler/`、Supabase 的 `.temp/` 或已有的环境密钥文件；保留 `.env.example` 和 `.dev.vars.example`。
+
+例如在 macOS / Linux 上复制 AstroWind 到一个新的目录：
 
 ```sh
-npm run create
-# 或无需交互
-npm run create -- --template starlight --name "My Docs" --dir ./my-docs
-npm run create -- --template astrowind --name "My Site" --dir ./my-site
-```
-
-不传 `--dir` 时，目录名由项目名转换为英文小写短名。目录已存在会安全退出。
-
-```sh
-cd my-site
+rsync -a --exclude=node_modules --exclude=dist --exclude=.astro --exclude=.wrangler --exclude=.temp \
+  --include=.env.example --include=.dev.vars.example --exclude='.env*' --exclude='.dev.vars*' \
+  --exclude='pnpm-*' astrowind/ ../my-site/
+cd ../my-site
 npm ci
 npm run dev
-npm run check
-npm run build
-npm run preview
 ```
 
-生成项目的 `README.md` 说明了内容位置、环境配置和部署步骤。AstroWind 在未配置 Supabase 时仍可预览页面，提交表单会显示服务暂不可用；生产使用前应先执行迁移并设置 Worker 密钥。
+复制 Starlight 时将 `astrowind/` 换为 `starlight/`。目标目录应是新目录，避免合并到已有项目。也可以直接在本仓库进入任一模板目录运行安装与启动命令。
 
-## 模板约定
+开发前修改 `package.json` 的项目名、站点标题与域名，以及 `wrangler.jsonc` 的 Worker 名称。独立项目英文使用 `/`，中文使用 `/zh-cn/`。具体内容和环境配置见各模板的 README。
 
-| 项目 | 英文 | 中文 | 部署 |
-| --- | --- | --- | --- |
-| Starlight | `/startlight/` | `/startlight/zh-cn/` | 合并部署时由仓库根目录的 Cloudflare Worker 提供 |
-| AstroWind | `/astrowind/` | `/astrowind/zh-cn/` | 合并部署时由同一个 Worker 提供页面与表单接口 |
+修改后检查并构建：
 
-将示例域名 `https://example.com` 改为正式域名后再部署。AstroWind 保留了上游组件和演示页；版本与 MIT 署名见 [astrowind/UPSTREAM.md](astrowind/UPSTREAM.md)。两个模板各自带有锁文件。
+```sh
+npm run check
+npm run build
+```
 
-## 将本仓库部署到 Cloudflare
+AstroWind 保留了上游组件、博客与演示页，可按实际项目删减。上游版本和 MIT 署名见 [astrowind/UPSTREAM.md](astrowind/UPSTREAM.md)。未配置 Supabase 时可以预览页面；使用表单前执行迁移并设置服务端密钥。
 
-仓库根目录的 `wrangler.jsonc` 定义唯一 Worker 和一份组合静态资源目录。根目录构建会分别安装并构建两个模板，然后将输出放到 `dist/astrowind/` 和 `dist/startlight/`。
+## 本仓库的 Cloudflare 演示部署
+
+根目录将两个模板构建为同一个站点：
+
+| 模板 | 英文 | 中文 |
+| --- | --- | --- |
+| AstroWind | `/astrowind/` | `/astrowind/zh-cn/` |
+| Starlight | `/startlight/` | `/startlight/zh-cn/` |
+
+`starlight/` 是源码目录，`/startlight/` 是约定的演示访问路径。根目录的 `wrangler.jsonc`、`scripts/`、`src/cloudflare-worker.mjs` 仅负责这个组合部署。
 
 ```sh
 npm ci
@@ -46,8 +55,17 @@ npm run preview
 npm run deploy
 ```
 
-AstroWind 的表单接口在 `/astrowind/api/contact` 和 `/astrowind/api/subscribe`。执行 `astrowind/supabase/migrations/` 下的迁移后，为这个根 Worker 设置 `SUPABASE_URL`、`SUPABASE_SECRET_KEY`，可选设置 `TURNSTILE_SECRET_KEY`；`PUBLIC_TURNSTILE_SITE_KEY` 是构建变量。密钥只能设置为 Worker Secret，不能放进前端变量。
+构建会安装并构建两个模板，将静态资源组合到根目录 `dist/`。部署前设置构建变量 `PUBLIC_SITE_URL` 为正式域名，例如 `https://example.com`，不要附加模板路径。
 
-连接 GitHub 自动部署：在 Cloudflare Dashboard 打开 Worker `aikitr-astro-template` 的 **Settings → Builds → Connect**，选择 GitHub 仓库 `aikitr/aikitr-astro-template` 和 `main` 分支。设置 Build command 为 `npm run build`，Deploy command 为 `npx wrangler deploy --config wrangler.jsonc`，Root directory 留空。每次推送到 `main` 后，Cloudflare Workers Builds 会构建并更新这个 Worker。首次连接时在 Build variables 中配置 `PUBLIC_SITE_URL` 为该 Worker 的正式站点 URL；Turnstile 公钥也是非敏感的构建变量。
+表单接口是 `/astrowind/api/contact` 和 `/astrowind/api/subscribe`。执行 [数据库迁移](astrowind/supabase/migrations/20261002053928_create_form_tables.sql) 后，为根 Worker 设置 `SUPABASE_URL`、`SUPABASE_SECRET_KEY`；本地预览写入根目录 `.dev.vars`，正式环境使用 Worker Secrets。可选 Turnstile 配置见 [AstroWind README](astrowind/README.md#可选-turnstile)。表单只入库，不发送通知或订阅邮件。
 
-未配置 Supabase 时网站仍可打开，但表单接口会返回服务未配置响应。未启用 Turnstile 时接口仍能保存内容，因此生产环境建议同时配置 Turnstile 并为 Worker 配置防刷规则。首版只写入数据库，不发送通知或订阅邮件。
+### GitHub 自动部署
+
+Cloudflare Worker 的 **Settings → Builds** 连接 GitHub 仓库 `aikitr/aikitr-astro-template` 的 `main` 分支，配置：
+
+- Build command：`npm run build`
+- Deploy command：`npx wrangler deploy --config wrangler.jsonc`
+- Root directory：仓库根目录
+- Build variables：`PUBLIC_SITE_URL`，以及启用 Turnstile 时的 `PUBLIC_TURNSTILE_SITE_KEY`
+
+推送到 `main` 后自动更新同一个 Worker。Supabase 和 Turnstile 私钥始终使用 Worker Secrets。

@@ -19,3 +19,7 @@ pnpm-debug.log*
 
 # macOS-specific files
 .DS_Store
+
+# npm is the package manager used by this template.
+pnpm-lock.yaml
+pnpm-workspace.yaml

@@ -16,6 +16,9 @@ test('canonical URLs include the configured base path exactly once', () => {
 });
 
 test('canonical URLs respect trailing-slash settings and the default root base', () => {
-  assert.equal(canonicalUrl('/about/', 'https://site.example', '/astrowind', false), 'https://site.example/astrowind/about');
+  assert.equal(
+    canonicalUrl('/about/', 'https://site.example', '/astrowind', false),
+    'https://site.example/astrowind/about'
+  );
   assert.equal(canonicalUrl('/about', 'https://site.example', '/', true), 'https://site.example/about/');
 });
